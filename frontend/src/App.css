@@ -1,0 +1,567 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 64px;
+  position: relative;
+}
+
+/* ---- Page header (full-bleed masthead bar) ---- */
+
+.page-header {
+  /* Breaks the header out of #root's centered, padded 960px container to span the full
+     viewport width. width:100vw + this negative margin is the standard "full-bleed" trick;
+     the padding below re-adds #root's own 24px inset so the title still lines up with the
+     rest of the page's content underneath it. */
+  width: 100vw;
+  box-sizing: border-box;
+  margin-left: calc(-50vw + 50%);
+  margin-bottom: 24px;
+  padding: 28px calc(50vw - 50% + 24px) 24px;
+  background: var(--surface);
+  border-top: 2px solid var(--series-high);
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+
+.page-header h1 {
+  margin: 0;
+}
+
+/* ---- Ticker entry command bar ---- */
+
+.symbol-form {
+  /* inline-flex + align-self:flex-start makes the bar hug its content's width instead of
+     stretching to fill .app's full width (flex children stretch by default on the cross axis
+     of a column-direction parent) - without this the bar would be a mostly-empty box. */
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: stretch;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 0;
+  box-shadow: var(--shadow);
+}
+
+.symbol-form label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 22px;
+  background: var(--series-high);
+  white-space: nowrap;
+}
+
+.symbol-form-label-text {
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 600;
+  color: #000000;
+}
+
+/* ---- Autocomplete dropdown ---- */
+
+.symbol-input-wrap {
+  /* position:relative anchors the absolutely-positioned .symbol-suggestions dropdown below
+     just the input, not the whole command bar (which also contains the label and button). */
+  position: relative;
+  width: 200px;
+}
+
+.symbol-form input {
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  padding: 14px 18px;
+  border: none;
+  background: transparent;
+  color: var(--text-h);
+  width: 100%;
+  box-sizing: border-box;
+  transition: background-color 0.12s ease;
+}
+
+.symbol-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  /* Wider than the 200px input itself (like Google's own suggestion box) so company names
+     aren't truncated to a few characters; capped back to 100% on mobile below to avoid
+     overflowing narrow viewports. */
+  width: max(100%, 340px);
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow);
+  max-height: 280px;
+  overflow-y: auto;
+  z-index: 20;
+}
+
+.symbol-suggestions li {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.symbol-suggestions li:last-child {
+  border-bottom: none;
+}
+
+.symbol-suggestions li.active,
+.symbol-suggestions li:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.symbol-suggestion-symbol {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text-h);
+  flex-shrink: 0;
+}
+
+.symbol-suggestion-name {
+  font-size: 13px;
+  color: var(--text);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.symbol-suggestion-exchange {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.symbol-form input::placeholder {
+  color: var(--text-muted);
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 400;
+}
+
+.symbol-form input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.symbol-form button {
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  padding: 0 28px;
+  border: none;
+  border-left: 1px solid var(--border-strong);
+  border-radius: 0;
+  color: var(--text-h);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    background-color 0.12s ease,
+    color 0.12s ease,
+    opacity 0.12s ease;
+}
+
+.symbol-form button:hover:not(:disabled) {
+  background: var(--series-high);
+  border-left-color: var(--series-high);
+  color: #000000;
+}
+
+.symbol-form button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ---- Error banner ---- */
+
+.error-banner {
+  padding: 14px 18px;
+  border: 1px solid var(--danger-border);
+  border-radius: 0;
+  background: var(--danger-bg);
+  color: var(--danger);
+  text-align: left;
+  font-size: 14px;
+}
+
+/* ---- Empty state (shown before any search) ---- */
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 32px 0 8px;
+  text-align: left;
+}
+
+.empty-state-lead {
+  color: var(--text);
+  font-size: 15px;
+  max-width: 560px;
+}
+
+.empty-state-examples {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.empty-state-examples-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-muted);
+}
+
+.empty-state-examples button {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-h);
+  cursor: pointer;
+  transition:
+    background-color 0.12s ease,
+    color 0.12s ease;
+}
+
+.empty-state-examples button:hover {
+  background: var(--text-h);
+  color: #000000;
+}
+
+.empty-state-features {
+  /* 1px grid gap + this element's own background acting as the "gridline" color, with each
+     cell painted over it in the surface color, is a common trick for hairline dividers between
+     grid cells without needing a border on every individual cell. */
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+
+.empty-state-features li {
+  background: var(--surface);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.empty-state-feature-label {
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-h);
+}
+
+.empty-state-feature-detail {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 145%;
+}
+
+/* ---- Results: ticker heading, range selector, chart, table ---- */
+
+.results {
+  text-align: left;
+}
+
+.results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 12px 0 16px;
+}
+
+.results h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--text-h);
+  margin: 0;
+}
+
+.range-selector {
+  display: flex;
+}
+
+.range-selector button {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  padding: 6px 14px;
+  border: 1px solid var(--border-strong);
+  border-right: none;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  transition:
+    background-color 0.12s ease,
+    color 0.12s ease;
+}
+
+.range-selector button:last-child {
+  border-right: 1px solid var(--border-strong);
+}
+
+.range-selector button:hover:not(.active) {
+  border-color: var(--text-h);
+  color: var(--text-h);
+}
+
+.range-selector button.active {
+  background: var(--text-h);
+  border-color: var(--text-h);
+  color: #000000;
+}
+
+/* Small pulsing square before the ticker heading, signaling "this is live data". */
+.results h2::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: var(--good);
+  box-shadow: 0 0 0 0 rgba(21, 128, 61, 0.7);
+  animation: pulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(21, 128, 61, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(21, 128, 61, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(21, 128, 61, 0);
+  }
+}
+
+.summary-chart {
+  margin: 0 0 28px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  padding: 20px 8px 8px;
+  box-shadow: var(--shadow);
+}
+
+.chart-container {
+  /* Gives ResponsiveContainer a CSS-driven height (see DailySummaryChart.tsx) so it can be
+     shrunk on mobile via a plain media query instead of a JS matchMedia listener. */
+  width: 100%;
+  height: 320px;
+}
+
+@media (max-width: 640px) {
+  .chart-container {
+    height: 260px;
+  }
+}
+
+/* Custom recharts Tooltip content - see the CustomTooltip component in DailySummaryChart.tsx. */
+.chart-tooltip {
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-radius: 0;
+  padding: 10px 12px;
+  font-family: var(--mono);
+  font-size: 12px;
+  min-width: 160px;
+}
+
+.chart-tooltip-label {
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 10px;
+  margin-bottom: 6px;
+}
+
+.chart-tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0;
+}
+
+.chart-tooltip-key {
+  width: 10px;
+  height: 2px;
+  flex-shrink: 0;
+}
+
+.chart-tooltip-name {
+  color: var(--text);
+  flex: 1;
+}
+
+.chart-tooltip-value {
+  color: var(--text-h);
+  font-weight: 600;
+}
+
+.summary-table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  /* Lets the table scroll horizontally within its own card on narrow screens, instead of the
+     whole page gaining a horizontal scrollbar. */
+  overflow-x: auto;
+  box-shadow: var(--shadow);
+}
+
+.summary-table {
+  width: 100%;
+  /* Keeps columns from crushing together before overflow-x kicks in. */
+  min-width: 480px;
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.summary-table th,
+.summary-table td {
+  text-align: right;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.summary-table th:first-child,
+.summary-table td:first-child {
+  text-align: left;
+}
+
+.summary-table thead th {
+  font-family: var(--sans);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 11px;
+  color: var(--text-muted);
+  background: var(--surface-2);
+}
+
+.summary-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.summary-table tbody tr {
+  transition: background-color 0.1s ease;
+}
+
+.summary-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.summary-table td:nth-child(2) {
+  color: var(--series-low);
+}
+
+.summary-table td:nth-child(3) {
+  color: var(--series-high);
+}
+
+/* ---- Mobile breakpoints ---- */
+
+@media (max-width: 640px) {
+  .page-header {
+    padding: 24px calc(50vw - 50% + 24px) 20px;
+  }
+
+  .symbol-form {
+    /* On mobile the bar should fill the width (unlike the desktop hug-content sizing above)
+       and its segments stack vertically instead of sitting side by side. */
+    align-self: stretch;
+    flex-direction: column;
+  }
+
+  .symbol-form label {
+    padding: 12px 16px;
+  }
+
+  .symbol-input-wrap {
+    width: 100%;
+  }
+
+  .symbol-suggestions {
+    width: 100%;
+  }
+
+  .symbol-form button {
+    padding: 14px 16px;
+    border-left: none;
+    border-top: 1px solid var(--border-strong);
+  }
+
+  .symbol-form button:hover:not(:disabled) {
+    border-top-color: var(--series-high);
+  }
+
+  .results-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .summary-chart {
+    padding: 16px 4px 4px;
+  }
+
+  .summary-table th,
+  .summary-table td {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+
+  .empty-state-features {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 420px) {
+  #root {
+    padding: 0 16px;
+  }
+
+  .page-header {
+    padding: 20px calc(50vw - 50% + 16px) 16px;
+  }
+}

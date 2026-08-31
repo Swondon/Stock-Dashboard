@@ -1,0 +1,12 @@
+# .NET
+backend/**/bin/
+backend/**/obj/
+*.user
+
+# Node / frontend (frontend/ has its own .gitignore too; this covers root-level tooling)
+**/node_modules/
+
+# Editors / OS
+.vs/
+.idea/
+.DS_Store

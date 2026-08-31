@@ -1,0 +1,105 @@
+/* Global theme tokens + base typography. Component-specific styles live in App.css; this file
+   only holds the CSS custom properties every component draws from, plus the page-level
+   scaffolding (#root sizing, base heading/paragraph styles). The app is dark-only by design
+   (no light-mode variant / prefers-color-scheme branching) - see PROMPT_LOG.md. */
+:root {
+  color-scheme: dark;
+
+  /* Surfaces */
+  --page: #000000;
+  --bg: #000000;
+  --surface: #0a0a0a;
+  --surface-2: #141414;
+  --border: rgba(255, 255, 255, 0.18);
+  --border-strong: rgba(255, 255, 255, 0.4);
+
+  /* Ink */
+  --text: #c9c9c9;
+  --text-h: #ffffff;
+  --text-muted: #7a7a7a;
+
+  /* The only two data colors in the app: green = high, red = low */
+  --series-high: #15803d;
+  --series-low: #dc2626;
+
+  /* Status reuses the same two hues - see PROMPT_LOG.md for the validated pairing */
+  --good: #15803d;
+  --danger: #dc2626;
+  --danger-bg: rgba(220, 38, 38, 0.12);
+  --danger-border: rgba(220, 38, 38, 0.5);
+
+  --shadow: 0 16px 40px -20px rgba(0, 0, 0, 0.9);
+
+  --sans: 'Inter', system-ui, 'Segoe UI', Arial, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+
+  font: 16px/155% var(--sans);
+  letter-spacing: 0.1px;
+  color: var(--text);
+  background: var(--page);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background: var(--page);
+  min-height: 100vh;
+}
+
+/* Centered, max-960px content column. Individual full-bleed elements (the page header) opt
+   out of this via their own negative-margin trick - see .page-header in App.css. */
+#root {
+  width: 960px;
+  max-width: 100%;
+  margin: 0 auto;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 0 24px;
+}
+
+h1,
+h2 {
+  font-family: var(--sans);
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+h1 {
+  font-size: 34px;
+  letter-spacing: -0.6px;
+  margin: 40px 0 4px;
+  @media (max-width: 1024px) {
+    font-size: 27px;
+    margin: 24px 0 4px;
+  }
+}
+
+h2 {
+  font-size: 24px;
+  line-height: 118%;
+  letter-spacing: -0.24px;
+  margin: 0 0 8px;
+  @media (max-width: 1024px) {
+    font-size: 20px;
+  }
+}
+
+p {
+  margin: 0;
+}
+
+code {
+  font-family: var(--mono);
+  display: inline-flex;
+  color: var(--text-h);
+  font-size: 15px;
+  line-height: 135%;
+  padding: 4px 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
